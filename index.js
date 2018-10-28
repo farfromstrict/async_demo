@@ -8,35 +8,35 @@ const DURATION = 1000
 
 function getTime() {
   const time = new Date()
-  const min = time.getMinutes()
+  //const min = time.getMinutes()
   const sec = time.getSeconds()
   const msec = time.getMilliseconds()
 
-  // return min + ':' + sec + '.' + msec
-  return sec + '.' + msec
+  // return `${min}:${sec}.${msec}`
+  return `${sec}.${msec}`
 }
 
 const sleep = (id, millisecond) => {
   const start = new Date()
-  while (new Date() - start <= millisecond) {}
+  while (new Date() - start <= millisecond) {
+    // empty loop
+  }
 }
 
 const asleep = (id, millisecond, callback) => {
   setTimeout(callback, millisecond)
 }
 
-const random = () => {
-  return Math.floor( Math.random()*100 ) + 1
-}
+const random = () => Math.floor(Math.random() * 100) + 1
 
-const normal_task = (id, val=0) => {
+const normalTask = (id, val=0) => {
   console.log(getTime(), chalk.green.bold('[normal]'), chalk.green.bold('[' + id + ']'), 'input:', val)
   let output = random()
   console.log(getTime(), chalk.green.bold('[normal]'), chalk.green.bold('[' + id + ']'), 'output:', output)
   return output
 } 
 
-const sync_task = (id, req=0, duration=DURATION) => {
+const syncTask = (id, req=0, duration=DURATION) => {
   console.log(getTime(), chalk.blue.bold('[sync]'), chalk.blue.bold('[' + id + ']'), 'request:', req)
   sleep(id, duration)
   let resp = random()
@@ -44,7 +44,7 @@ const sync_task = (id, req=0, duration=DURATION) => {
   return resp
 }
 
-const async_task = (id, req=0, callback, duration=DURATION) => {
+const asyncTask = (id, req=0, callback, duration=DURATION) => {
   console.log(getTime(), chalk.red.bold('[async]'), chalk.red.bold('[' + id + ']'), 'request:', req)
   asleep(id, duration, () => {
     let resp = random()
@@ -53,7 +53,7 @@ const async_task = (id, req=0, callback, duration=DURATION) => {
   })
 }
 
-const async_promise = (id, req=0, duration=DURATION) => {
+const asyncPromise = (id, req=0, duration=DURATION) => {
   return new Promise((resolve, reject) => {
     console.log(getTime(), chalk.red.bold('[async-p]'), chalk.red.bold('[' + id + ']'), 'request:', req)
     asleep(id, duration, () => {
@@ -65,38 +65,38 @@ const async_promise = (id, req=0, duration=DURATION) => {
 }
 
 
-const sync_demo = () => {
+const syncDemo = () => {
   console.log(chalk.grey('sync'))
 
-  let data = normal_task(1)
-  data = sync_task(1, data)
-  data = sync_task(2, data)
-  data = sync_task(3, data)
-  data = normal_task(2, data)
+  let data = normalTask(1)
+  data = syncTask(1, data)
+  data = syncTask(2, data)
+  data = syncTask(3, data)
+  data = normalTask(2, data)
 }
 
 
-const serial_demo = () => {
+const serialDemo = () => {
   console.log(chalk.grey('serial'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
-  async_task(1, data, (err, val) => {
-    async_task(2, val, (err, val) => {
-      async_task(3, val, (err, val) => {
-        data = normal_task(2, val)
+  asyncTask(1, data, (err, val) => {
+    asyncTask(2, val, (err, val) => {
+      asyncTask(3, val, (err, val) => {
+        data = normalTask(2, val)
       })
     })
   })
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
 
-const parallel_demo = () => {
+const parallelDemo = () => {
   console.log(chalk.grey('parallel'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
   let end = [false, false, false]
   let vals = [-1, -1, -1]
@@ -111,11 +111,11 @@ const parallel_demo = () => {
   }
 
   const run = (id, val) => {
-    async_task(id, val, (err, val) => {
+    asyncTask(id, val, (err, val) => {
       end[id-2] = true
       vals[id-2] = val
       check(vals => {
-        data = normal_task(2, vals)
+        data = normalTask(2, vals)
       })
     })
   }
@@ -124,60 +124,60 @@ const parallel_demo = () => {
   run(3, data)
   run(4, data)
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
 
-const promise_serial_demo = () => {
+const promiseSerialDemo = () => {
   console.log(chalk.grey('promise serial'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
-  async_promise(2, data).then(val => {
-    return async_promise(3, val)
+  asyncPromise(2, data).then(val => {
+    return asyncPromise(3, val)
   }).then(val => {
-    return async_promise(4, val)
+    return asyncPromise(4, val)
   }).then(val => {
-    data = normal_task(2, val)
+    data = normalTask(2, val)
   })
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
 
-const promise_parallel_demo = () => {
+const promiseParallelDemo = () => {
   console.log(chalk.grey('promise parallel'))
   
-  let data = normal_task(1)
+  let data = normalTask(1)
 
   const promises = [
-    async_promise(2, data), 
-    async_promise(3, data), 
-    async_promise(4, data)
+    asyncPromise(2, data), 
+    asyncPromise(3, data), 
+    asyncPromise(4, data)
   ]
 
-  data = normal_task(2, data)
+  data = normalTask(2, data)
 
   Promise.all(promises).then(vals => {
     return vals
   }).then(vals => {
-    data = normal_task(3, vals)
+    data = normalTask(3, vals)
   })
 
-  data = normal_task(4, data)
+  data = normalTask(4, data)
 }
 
 
-const generator_sync_demo = () => {
+const generatorSyncDemo = () => {
   console.log(chalk.grey('generator sync'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
-  function* gen_sync_tasks() {
-    val = yield sync_task(2, data)
-    val = yield sync_task(3, val)
-    val = yield sync_task(4, val)
-    val = yield normal_task(2, val)
+  function* genSyncTasks() {
+    val = yield syncTask(2, data)
+    val = yield syncTask(3, val)
+    val = yield syncTask(4, val)
+    val = yield normalTask(2, val)
   }
 
   const run = (g, val) => {
@@ -187,55 +187,55 @@ const generator_sync_demo = () => {
     }
   }
 
-  run(gen_sync_tasks(), data)
+  run(genSyncTasks(), data)
 }
 
-const generator_serial_demo_p = () => {
+const generatorSerialDemoP = () => {
   console.log(chalk.grey('generator serial - promise'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
-  function* gen_async_tasks(val) {
-    val = yield async_promise(2, val)
-    val = yield async_promise(3, val)
-    val = yield async_promise(4, val)
+  function* gen_asyncTasks(val) {
+    val = yield asyncPromise(2, val)
+    val = yield asyncPromise(3, val)
+    val = yield asyncPromise(4, val)
   }
 
-  let g = gen_async_tasks(data)
+  let g = gen_asyncTasks(data)
 
   g.next().value.then(val => {
     g.next(val).value.then(val => {
       g.next(val).value.then(val => {
-        data = normal_task(2, val)
+        data = normalTask(2, val)
       })
     })
   })
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
-const generator_serial_demo_t = () => {
+const generatorSerialDemoT = () => {
   console.log(chalk.grey('generator serial - thunk'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
-    const async_task_thunk = (id, req) => {
+    const asyncTaskThunk = (id, req) => {
       return function (callback) {
-        return async_task(id, req, callback)
+        return asyncTask(id, req, callback)
       }
     }
 
-    const normal_task_thunk = (id, req) => {
+    const normalTaskThunk = (id, req) => {
       return function () {
-        normal_task(id, req)
+        normalTask(id, req)
       }
     }
 
-  function* gen_async_tasks(val) {
-      val = yield async_task_thunk(2, val)
-      val = yield async_task_thunk(3, val)
-      val = yield async_task_thunk(4, val)
-      val = yield normal_task_thunk(2, val)
+  function* gen_asyncTasks(val) {
+      val = yield asyncTaskThunk(2, val)
+      val = yield asyncTaskThunk(3, val)
+      val = yield asyncTaskThunk(4, val)
+      val = yield normalTaskThunk(2, val)
   }
 
   const run = (fn, val) => {
@@ -250,119 +250,119 @@ const generator_serial_demo_t = () => {
     next(null, val)
   }
 
-  run(gen_async_tasks, data)
+  run(gen_asyncTasks, data)
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
 
-const async_serial_demo = () => {
+const asyncSerialDemo = () => {
   console.log(chalk.grey('async serial'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
-  const async_tasks = async function (val) {
-    val = await async_promise(2, val)
-    val = await async_promise(3, val)
-    val = await async_promise(4, val)
+  const asyncTasks = async function (val) {
+    val = await asyncPromise(2, val)
+    val = await asyncPromise(3, val)
+    val = await asyncPromise(4, val)
     return val
   }
 
-  async_tasks(data).then(val => {
-    normal_task(2, val)
+  asyncTasks(data).then(val => {
+    normalTask(2, val)
   })
 
-  data = normal_task(4, data)
+  data = normalTask(4, data)
 }
 
 
-const async_parallel_demo = () => {
+const asyncParallelDemo = () => {
   console.log(chalk.grey('async parallel'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
-  const async_tasks = async function (val) {
+  const asyncTasks = async function (val) {
     let vals = await Promise.all([
-      async_promise(2, val),
-      async_promise(3, val),
-      async_promise(4, val)
+      asyncPromise(2, val),
+      asyncPromise(3, val),
+      asyncPromise(4, val)
     ])
     return vals
   }
 
-  async_tasks(data).then(vals => {
-    normal_task(2, vals)
+  asyncTasks(data).then(vals => {
+    normalTask(2, vals)
   })
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
 
-const co_serial_demo_p = () => {
+const coSerialDemoP = () => {
   console.log(chalk.grey('co serial - promise'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
   co((function* (val) {
-    val = yield async_promise(2, val)
-    val = yield async_promise(3, val)
-    val = yield async_promise(4, val)
-    val = yield Promise.promisify(sync_task)(2, val)
+    val = yield asyncPromise(2, val)
+    val = yield asyncPromise(3, val)
+    val = yield asyncPromise(4, val)
+    val = yield Promise.promisify(syncTask)(2, val)
   })(data)).catch(err => {
     console.log(chalk.red(err))
   })
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
-const co_serial_demo_t = () => {
+const coSerialDemoT = () => {
   console.log(chalk.grey('co serial - thunk'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
   co((function* (val) {
-    val = yield thunkify(async_task)(2, val)
-    val = yield thunkify(async_task)(3, val)
-    val = yield thunkify(async_task)(4, val)
-    val = yield thunkify(normal_task)(2, val)
+    val = yield thunkify(asyncTask)(2, val)
+    val = yield thunkify(asyncTask)(3, val)
+    val = yield thunkify(asyncTask)(4, val)
+    val = yield thunkify(normalTask)(2, val)
   })(data)).catch(err => {
     console.log(chalk.red(err))
   })
 
-  data = normal_task(3, data)
+  data = normalTask(3, data)
 }
 
 
-const co_parallel_demo = () => {
+const coParallelDemo = () => {
   console.log(chalk.grey('co parallel'))
 
-  let data = normal_task(1)
+  let data = normalTask(1)
 
   co((function* (val) {
     const result = yield [
-      async_promise(2, val),
-      async_promise(3, val),
-      async_promise(4, val),
+      asyncPromise(2, val),
+      asyncPromise(3, val),
+      asyncPromise(4, val),
     ]
     return result
   })(data)).then(vals => {
-    data = normal_task(5, vals)
+    data = normalTask(5, vals)
   })
 
-  data = normal_task(6, data)
+  data = normalTask(6, data)
 }
 
 
-// sync_demo()
-// serial_demo()
-// parallel_demo()
-// promise_serial_demo()
-// promise_parallel_demo()
-// generator_sync_demo()
-// generator_serial_demo_p()
-// generator_serial_demo_t()
-// async_serial_demo()
-// async_parallel_demo()
-// co_serial_demo_p()
-// co_serial_demo_t()
-// co_parallel_demo()
+ syncDemo()
+// serialDemo()
+// parallelDemo()
+// promiseSerialDemo()
+// promiseParallelDemo()
+// generatorSyncDemo()
+// generatorSerialDemoP()
+// generatorSerialDemoT()
+// asyncSerialDemo()
+// asyncParallelDemo()
+// coSerialDemoP()
+// coSerialDemoT()
+// coParallelDemo()
