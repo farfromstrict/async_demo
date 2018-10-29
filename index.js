@@ -6,9 +6,9 @@ const thunkify = require('thunkify')
 const DURATION = 1000
 
 
-function getTime() {
+const getTime = () => {
   const time = new Date()
-  //const min = time.getMinutes()
+  // const min = time.getMinutes()
   const sec = time.getSeconds()
   const msec = time.getMilliseconds()
 
@@ -29,40 +29,38 @@ const asleep = (id, millisecond, callback) => {
 
 const random = () => Math.floor(Math.random() * 100) + 1
 
-const normalTask = (id, val=0) => {
-  console.log(getTime(), chalk.green.bold('[normal]'), chalk.green.bold('[' + id + ']'), 'input:', val)
-  let output = random()
-  console.log(getTime(), chalk.green.bold('[normal]'), chalk.green.bold('[' + id + ']'), 'output:', output)
+const normalTask = (id, val = 0) => {
+  console.log(getTime(), chalk.green.bold('[normal]'), chalk.green.bold(`[${id}]`), 'input:', val)
+  const output = random()
+  console.log(getTime(), chalk.green.bold('[normal]'), chalk.green.bold(`[${id}]`), 'output:', output)
   return output
-} 
+}
 
-const syncTask = (id, req=0, duration=DURATION) => {
-  console.log(getTime(), chalk.blue.bold('[sync]'), chalk.blue.bold('[' + id + ']'), 'request:', req)
+const syncTask = (id, req = 0, duration = DURATION) => {
+  console.log(getTime(), chalk.blue.bold('[sync]'), chalk.blue.bold(`[${id}]`), 'request:', req)
   sleep(id, duration)
-  let resp = random()
-  console.log(getTime(), chalk.blue.bold('[sync]'), chalk.blue.bold('[' + id + ']'), 'response:', resp)
+  const resp = random()
+  console.log(getTime(), chalk.blue.bold('[sync]'), chalk.blue.bold(`[${id}]`), 'response:', resp)
   return resp
 }
 
-const asyncTask = (id, req=0, callback, duration=DURATION) => {
-  console.log(getTime(), chalk.red.bold('[async]'), chalk.red.bold('[' + id + ']'), 'request:', req)
+const asyncTask = (id, req = 0, callback, duration = DURATION) => {
+  console.log(getTime(), chalk.red.bold('[async]'), chalk.red.bold(`[${id}]`), 'request:', req)
   asleep(id, duration, () => {
-    let resp = random()
-    console.log(getTime(), chalk.red.bold('[async]'), chalk.red.bold('[' + id + ']'), 'response:', resp)
+    const resp = random()
+    console.log(getTime(), chalk.red.bold('[async]'), chalk.red.bold(`[${id}]`), 'response:', resp)
     callback && callback(null, resp)
   })
 }
 
-const asyncPromise = (id, req=0, duration=DURATION) => {
-  return new Promise((resolve, reject) => {
-    console.log(getTime(), chalk.red.bold('[async-p]'), chalk.red.bold('[' + id + ']'), 'request:', req)
-    asleep(id, duration, () => {
-      let resp = random()
-      console.log(getTime(), chalk.red.bold('[async-p]'), chalk.red.bold('[' + id + ']'), 'response:', resp)
-      return resolve(resp)
-    })
+const asyncPromise = (id, req = 0, duration = DURATION) => new Promise((resolve) => {
+  console.log(getTime(), chalk.red.bold('[async-p]'), chalk.red.bold(`[${id}]`), 'request:', req)
+  asleep(id, duration, () => {
+    const resp = random()
+    console.log(getTime(), chalk.red.bold('[async-p]'), chalk.red.bold(`[${id}]`), 'response:', resp)
+    return resolve(resp)
   })
-}
+})
 
 
 const syncDemo = () => {
@@ -98,10 +96,10 @@ const parallelDemo = () => {
 
   let data = normalTask(1)
 
-  let end = [false, false, false]
-  let vals = [-1, -1, -1]
+  const end = [false, false, false]
+  const vals = [-1, -1, -1]
 
-  const check = callback => {
+  const check = (callback) => {
     for ( let val of end ) {
       if ( val === false ) {
         return
@@ -353,7 +351,7 @@ const coParallelDemo = () => {
 }
 
 
- syncDemo()
+syncDemo()
 // serialDemo()
 // parallelDemo()
 // promiseSerialDemo()

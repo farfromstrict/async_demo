@@ -6,6 +6,10 @@
   "extends": "eslint-config-airbnb",
   "rules": {
     "semi": 0,
-    "no-console": 0
+    "no-console": 0,
+    "no-shadow": [
+      "error", 
+      "allow": ["err", "val", "resolve", "reject"],
+    ],
   }
 }
