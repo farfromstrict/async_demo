@@ -352,7 +352,7 @@ const coParallelDemo = () => {
 }
 
 
-syncDemo()
+// syncDemo()
 // serialDemo()
 // parallelDemo()
 // promiseSerialDemo()
