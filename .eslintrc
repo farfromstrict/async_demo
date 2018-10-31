@@ -3,13 +3,9 @@
     "browser": true,
     "node": true,
   },
-  "extends": "eslint-config-airbnb",
+  "extends": "standard",
+  "plugins": ["standard", "import", "promise", "async", "node"],
   "rules": {
-    "semi": 0,
-    "no-console": 0,
-    "no-shadow": [
-      "error", 
-      "allow": ["err", "val", "resolve", "reject"],
-    ],
+    "no-multiple-empty-lines": [1, {"max": 2}],
   }
 }

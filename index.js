@@ -66,7 +66,8 @@ const asyncPromise = (id, req = 0, duration = DURATION) => new Promise((resolve)
 const syncDemo = () => {
   console.log(chalk.grey('sync'))
 
-  let data = normalTask(1)
+  let data = 0
+  data = normalTask(1)
   data = syncTask(1, data)
   data = syncTask(2, data)
   data = syncTask(3, data)
@@ -100,8 +101,8 @@ const parallelDemo = () => {
   const vals = [-1, -1, -1]
 
   const check = (callback) => {
-    for ( let val of end ) {
-      if ( val === false ) {
+    for (let val of end) {
+      if (val === false) {
         return
       }
     }
@@ -110,8 +111,8 @@ const parallelDemo = () => {
 
   const run = (id, val) => {
     asyncTask(id, val, (err, val) => {
-      end[id-2] = true
-      vals[id-2] = val
+      end[id - 2] = true
+      vals[id - 2] = val
       check(vals => {
         data = normalTask(2, vals)
       })
@@ -145,12 +146,12 @@ const promiseSerialDemo = () => {
 
 const promiseParallelDemo = () => {
   console.log(chalk.grey('promise parallel'))
-  
+
   let data = normalTask(1)
 
   const promises = [
-    asyncPromise(2, data), 
-    asyncPromise(3, data), 
+    asyncPromise(2, data),
+    asyncPromise(3, data),
     asyncPromise(4, data)
   ]
 
@@ -171,8 +172,8 @@ const generatorSyncDemo = () => {
 
   let data = normalTask(1)
 
-  function* genSyncTasks() {
-    val = yield syncTask(2, data)
+  function * genSyncTasks () {
+    let val = yield syncTask(2, data)
     val = yield syncTask(3, val)
     val = yield syncTask(4, val)
     val = yield normalTask(2, val)
@@ -180,7 +181,7 @@ const generatorSyncDemo = () => {
 
   const run = (g, val) => {
     let result = g.next(val)
-    if ( !result.done ) {
+    if (!result.done) {
       run(g, result.value)
     }
   }
@@ -193,13 +194,13 @@ const generatorSerialDemoP = () => {
 
   let data = normalTask(1)
 
-  function* gen_asyncTasks(val) {
+  function * genAsyncTasks (val) {
     val = yield asyncPromise(2, val)
     val = yield asyncPromise(3, val)
     val = yield asyncPromise(4, val)
   }
 
-  let g = gen_asyncTasks(data)
+  let g = genAsyncTasks(data)
 
   g.next().value.then(val => {
     g.next(val).value.then(val => {
@@ -217,38 +218,38 @@ const generatorSerialDemoT = () => {
 
   let data = normalTask(1)
 
-    const asyncTaskThunk = (id, req) => {
-      return function (callback) {
-        return asyncTask(id, req, callback)
-      }
+  const asyncTaskThunk = (id, req) => {
+    return function (callback) {
+      return asyncTask(id, req, callback)
     }
+  }
 
-    const normalTaskThunk = (id, req) => {
-      return function () {
-        normalTask(id, req)
-      }
+  const normalTaskThunk = (id, req) => {
+    return function () {
+      normalTask(id, req)
     }
+  }
 
-  function* gen_asyncTasks(val) {
-      val = yield asyncTaskThunk(2, val)
-      val = yield asyncTaskThunk(3, val)
-      val = yield asyncTaskThunk(4, val)
-      val = yield normalTaskThunk(2, val)
+  function * genAsyncTasks (val) {
+    val = yield asyncTaskThunk(2, val)
+    val = yield asyncTaskThunk(3, val)
+    val = yield asyncTaskThunk(4, val)
+    val = yield normalTaskThunk(2, val)
   }
 
   const run = (fn, val) => {
     let g = fn(val)
 
-    function next(err, val) {
+    function next (err, val) {
       let result = g.next(val)
-      if ( result.done ) return
+      if (result.done) return
       result.value((err, val) => next(err, val))
     }
 
     next(null, val)
   }
 
-  run(gen_asyncTasks, data)
+  run(genAsyncTasks, data)
 
   data = normalTask(3, data)
 }
@@ -301,7 +302,7 @@ const coSerialDemoP = () => {
 
   let data = normalTask(1)
 
-  co((function* (val) {
+  co((function * (val) {
     val = yield asyncPromise(2, val)
     val = yield asyncPromise(3, val)
     val = yield asyncPromise(4, val)
@@ -318,7 +319,7 @@ const coSerialDemoT = () => {
 
   let data = normalTask(1)
 
-  co((function* (val) {
+  co((function * (val) {
     val = yield thunkify(asyncTask)(2, val)
     val = yield thunkify(asyncTask)(3, val)
     val = yield thunkify(asyncTask)(4, val)
@@ -336,11 +337,11 @@ const coParallelDemo = () => {
 
   let data = normalTask(1)
 
-  co((function* (val) {
+  co((function * (val) {
     const result = yield [
       asyncPromise(2, val),
       asyncPromise(3, val),
-      asyncPromise(4, val),
+      asyncPromise(4, val)
     ]
     return result
   })(data)).then(vals => {
